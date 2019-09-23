@@ -4,6 +4,9 @@ import android.content.Loader;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.widget.GridView;
 
 import java.util.List;
@@ -16,7 +19,7 @@ import test.com.testdemo.Loader.GetApiDataLoader;
 
 public class ApiActivity extends AppCompatActivity {
 
-    private GridView gridView;
+    private RecyclerView recyclerView;
     private GridViewAdapter mGridViewAdapter;
 
     @Override
@@ -24,7 +27,7 @@ public class ApiActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_api);
 
-        gridView = (GridView) findViewById(R.id.gridView);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
         ApiLoaderCallback.startApiLoader(this, ApiDataLoaderCallback);
     }
@@ -37,10 +40,9 @@ public class ApiActivity extends AppCompatActivity {
 
         @Override
         protected void onStatusOk(List<ApiData> data) {
-            mGridViewAdapter = new GridViewAdapter(ApiActivity.this, data);
-            gridView.setNumColumns(4);
-            gridView.setAdapter(mGridViewAdapter);
-
+            mGridViewAdapter = new GridViewAdapter(data);
+            recyclerView.setAdapter(mGridViewAdapter);
+            recyclerView.setLayoutManager(new GridLayoutManager(ApiActivity.this,4));
         }
     };
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.LruCache;
 import android.view.LayoutInflater;
@@ -20,56 +21,52 @@ import java.util.List;
 import test.com.testdemo.Bean.ApiData;
 import test.com.testdemo.R;
 
-public class GridViewAdapter extends BaseAdapter {
+public class GridViewAdapter extends RecyclerView.Adapter<GridViewAdapter.ViewHolder> {
 
     private LayoutInflater mLayoutInflater;
-    private LruCache<String, Bitmap> memoryCache;
     List<ApiData> mItemList;
     ImageView imageView;
 
-    public GridViewAdapter(Context context, List<ApiData> itemList)
+    public GridViewAdapter(List<ApiData> itemList)
     {
-        mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mItemList = itemList;
     }
 
     @Override
-    public int getCount()
-    {
-        //取得 GridView 列表 Item 的數量
+    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        mLayoutInflater = LayoutInflater.from(viewGroup.getContext());
+        View v = mLayoutInflater.inflate(R.layout.item_gridview, viewGroup, false);
+        return new ViewHolder(v);
+    }
+
+    //将数据绑定到子View，会自动复用View
+    @Override
+    public void onBindViewHolder(ViewHolder viewHolder, int i) {
+        viewHolder.id.setText(mItemList.get(i).getId());
+        viewHolder.title.setText(mItemList.get(i).getTitle());
+        new DownloadImageTask(viewHolder.imageView).execute(mItemList.get(i).getThumbnailUrl());
+    }
+
+    //RecyclerView显示数据条数
+    @Override
+    public int getItemCount() {
         return mItemList.size();
     }
 
-    @Override
-    public Object getItem(int position)
-    {
-        //取得 GridView列表於 position 位置上的 Item
-        return mItemList.get(position);
-    }
 
-    @Override
-    public long getItemId(int position)
-    {
-        //取得 GridView 列表於 position 位置上的 Item 的 ID
-        return position;
-    }
+    class ViewHolder extends RecyclerView.ViewHolder {
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent)
-    {
-        View v = mLayoutInflater.inflate(R.layout.item_gridview, parent, false);
+        TextView id;
+        TextView title;
+        ImageView imageView;
 
-        TextView id = (TextView) v.findViewById(R.id.id);
-        TextView title = (TextView) v.findViewById(R.id.title);
-        imageView = (ImageView) v.findViewById(R.id.imageView);
+        public ViewHolder(View itemView) {
+            super(itemView);
 
-        id.setText(mItemList.get(position).getId());
-        title.setText(mItemList.get(position).getTitle());
-
-        new DownloadImageTask(imageView)
-                .execute(mItemList.get(position).getThumbnailUrl());
-
-        return v;
+            id = (TextView) itemView.findViewById(R.id.id);
+            title = (TextView) itemView.findViewById(R.id.title);
+            imageView = (ImageView) itemView.findViewById(R.id.imageView);
+        }
     }
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
