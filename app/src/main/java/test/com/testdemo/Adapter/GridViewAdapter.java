@@ -25,7 +25,6 @@ public class GridViewAdapter extends RecyclerView.Adapter<GridViewAdapter.ViewHo
 
     private LayoutInflater mLayoutInflater;
     List<ApiData> mItemList;
-    ImageView imageView;
 
     public GridViewAdapter(List<ApiData> itemList)
     {
@@ -39,7 +38,7 @@ public class GridViewAdapter extends RecyclerView.Adapter<GridViewAdapter.ViewHo
         return new ViewHolder(v);
     }
 
-    //将数据绑定到子View，会自动复用View
+
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
         viewHolder.id.setText(mItemList.get(i).getId());
@@ -47,7 +46,7 @@ public class GridViewAdapter extends RecyclerView.Adapter<GridViewAdapter.ViewHo
         new DownloadImageTask(viewHolder.imageView).execute(mItemList.get(i).getThumbnailUrl());
     }
 
-    //RecyclerView显示数据条数
+
     @Override
     public int getItemCount() {
         return mItemList.size();
